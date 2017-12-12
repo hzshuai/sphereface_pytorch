@@ -24,7 +24,6 @@ parser.add_argument('--bs', default=256, type=int, help='')
 args = parser.parse_args()
 use_cuda = torch.cuda.is_available()
 
-
 def alignment(src_img,src_pts):
     of = 2
     ref_pts = [ [30.2946+of, 51.6963+of],[65.5318+of, 51.5014+of],
@@ -40,6 +39,7 @@ def alignment(src_img,src_pts):
 
 
 def dataset_load(name,filename,pindex,cacheobj,zfile):
+    # print(name,filename,pindex,cacheobj,zfile)
     position = filename.rfind('.zip:')
     zipfilename = filename[0:position+4]
     nameinzip = filename[position+5:]
@@ -47,11 +47,12 @@ def dataset_load(name,filename,pindex,cacheobj,zfile):
     split = nameinzip.split('\t')
     nameinzip = split[0]
     classid = int(split[1])
+    # print('nameinzip: ', nameinzip, ', classid: ', classid)
     src_pts = []
     for i in range(5):
         src_pts.append([int(split[2*i+2]),int(split[2*i+3])])
 
-    data = np.frombuffer(zfile.read(nameinzip),np.uint8)
+    data = np.frombuffer(zfile.read('CASIA-maxpy-clean/' + nameinzip),np.uint8)
     img = cv2.imdecode(data,1)
     img = alignment(img,src_pts)
 
@@ -98,8 +99,9 @@ def train(epoch,args):
     total = 0
     batch_idx = 0
     ds = ImageDataset(args.dataset,dataset_load,'data/casia_landmark.txt',name=args.net+':train',
-        bs=args.bs,shuffle=True,nthread=6,imagesize=128)
+        bs=args.bs,shuffle=True,nthread=6,imagesize=128, maxlistnum=None)
     while True:
+        # print('........')
         img,label = ds.get()
         if img is None: break
         inputs = torch.from_numpy(img).float()
@@ -129,7 +131,8 @@ def train(epoch,args):
 
 net = getattr(net_sphere,args.net)()
 # net.load_state_dict(torch.load('sphere20a_0.pth'))
-net.cuda()
+if use_cuda:
+    net.cuda()
 criterion = net_sphere.AngleLoss()
 
 

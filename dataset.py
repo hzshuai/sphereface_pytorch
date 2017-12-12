@@ -30,8 +30,10 @@ def dataset_handle(name,filelist,result,callback,bs,pindex,freearr,arrimage,arrl
     pathlist = []
     nparrimage = np.frombuffer(arrimage.get_obj(),np.float32).reshape(10,len(arrimage)/10)
     nparrlabel = np.frombuffer(arrlabel.get_obj(),np.float32).reshape(10,len(arrlabel)/10)
+    # print(name,filelist,result,callback,bs,pindex,freearr,arrimage,arrlabel,zfile)
     while True:
         filename = filelist.get()
+        # print('filename = ', filename)
         if filename.endswith('\n'): filename=filename[:-1]
         if filename=='FINISH': break
 
@@ -78,6 +80,7 @@ class ImageDataset(object):
             if os.path.isdir(imageroot): imageroot = imageroot + '/'
             else:
                 imageroot = imageroot + ':'
+                print('imageroot', imageroot)
                 if '.zip:' in imageroot:
                     import zipfile
                     zipfilepath = imageroot.split(':')[0]
@@ -96,17 +99,22 @@ class ImageDataset(object):
                 for line in lines: self.flist.append(imageroot+line) # root/filepath classname || zippath:filename classname
 
         self.imagenum = len(self.flist)
+        print('imagenum', len(self.flist))
         if self.shuffle: random.shuffle(self.flist)
-        for filepath in self.flist:
+        for i, filepath in enumerate(self.flist):
             self.filelist.put(filepath)
+            if i % 100 == 0:
+                print('put...', i)
             if maxlistnum is not None: maxlistnum -= 1
-            if maxlistnum==0: break 
+            if maxlistnum==0: break
 
+        print('put...finished')
         for i in range(nthread):
             self.filelist.put('FINISH')
             p = Process(target=dataset_handle, args=(self.name,self.filelist,self.result,self.callback,self.bs,i,
                             self.freearr,self.arrimage,self.arrlabel,self.zfile))
             p.start()
+            print('start process: ', i)
 
     def get(self):
         while True:
