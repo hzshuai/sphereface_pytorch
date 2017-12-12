@@ -103,7 +103,7 @@ class ImageDataset(object):
         if self.shuffle: random.shuffle(self.flist)
         for i, filepath in enumerate(self.flist):
             self.filelist.put(filepath)
-            if i % 100 == 0:
+            if i % 10000 == 0:
                 print('put...', i)
             if maxlistnum is not None: maxlistnum -= 1
             if maxlistnum==0: break
