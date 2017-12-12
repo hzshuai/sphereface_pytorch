@@ -79,7 +79,7 @@ def printoneline(*argv):
     s = ''
     for arg in argv: s += str(arg) + ' '
     s = s[:-1]
-    sys.stdout.write('\r'+s)
+    sys.stdout.write('\n'+s)
     sys.stdout.flush()
 
 def save_model(model,filename):
@@ -88,7 +88,7 @@ def save_model(model,filename):
     torch.save(state, filename)
 
 def dt():
-    return datetime.datetime.now().strftime('%H:%M:%S')
+    return datetime.datetime.now().strftime('[%Y-%m-%d %H:%M:%S]')
 
 
 
@@ -122,7 +122,7 @@ def train(epoch,args):
         total += targets.size(0)
         correct += predicted.eq(targets.data).cpu().sum()
 
-        printoneline(dt(),'Te=%d Loss=%.4f | AccT=%.4f%% (%d/%d) %.4f %.2f %d'
+        printoneline(dt(),'epoch=%d Loss=%.4f | AccT=%.4f%% (%d/%d) %.4f %.2f %d'
             % (epoch,train_loss/(batch_idx+1), 100.0*correct/total, correct, total, 
             lossd, criterion.lamb, criterion.it))
         batch_idx += 1
