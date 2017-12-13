@@ -153,6 +153,7 @@ criterion = net_sphere.AngleLoss()
 
 
 print('start: time={}'.format(dt()))
+print('start with arguments %s: ' % args)
 for epoch in range(0, 20):
     if epoch in [0,10,15,18]:
         if epoch!=0: args.lr *= 0.1
