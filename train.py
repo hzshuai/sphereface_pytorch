@@ -19,8 +19,11 @@ import net_sphere
 parser = argparse.ArgumentParser(description='PyTorch sphereface')
 parser.add_argument('--net','-n', default='sphere20a', type=str)
 parser.add_argument('--dataset', default='../../dataset/face/casia/casia.zip', type=str)
+parser.add_argument('--lmk', default='data/casia_landmark.txt', type=str)
 parser.add_argument('--lr', default=0.1, type=float, help='learning rate')
 parser.add_argument('--bs', default=256, type=int, help='')
+parser.add_argument('--maxlistnum', type=int, help='')
+
 args = parser.parse_args()
 use_cuda = torch.cuda.is_available()
 
@@ -40,21 +43,31 @@ def alignment(src_img,src_pts):
 
 def dataset_load(name,filename,pindex,cacheobj,zfile):
     # print(name,filename,pindex,cacheobj,zfile)
-    position = filename.rfind('.zip:')
-    zipfilename = filename[0:position+4]
-    nameinzip = filename[position+5:]
+    if '.zip' in filename:
+        position = filename.rfind('.zip:')
+        zipfilename = filename[0:position+4]
+        nameinzip = filename[position+5:]
 
-    split = nameinzip.split('\t')
-    nameinzip = split[0]
-    classid = int(split[1])
-    # print('nameinzip: ', nameinzip, ', classid: ', classid)
-    src_pts = []
-    for i in range(5):
-        src_pts.append([int(split[2*i+2]),int(split[2*i+3])])
+        split = nameinzip.split()
+        nameinzip = split[0]
+        classid = int(split[1])
+        # print('nameinzip: ', nameinzip, ', classid: ', classid)
+        src_pts = []
+        for i in range(5):
+            src_pts.append([int(split[2*i+2]),int(split[2*i+3])])
 
-    data = np.frombuffer(zfile.read('CASIA-maxpy-clean/' + nameinzip),np.uint8)
-    img = cv2.imdecode(data,1)
-    img = alignment(img,src_pts)
+        data = np.frombuffer(zfile.read('CASIA-maxpy-clean/' + nameinzip),np.uint8)
+        img = cv2.imdecode(data,1)
+        img = alignment(img,src_pts)
+    else:
+        split = filename.split()
+        image_path = split[0]
+        classid = int(split[1])
+        img = cv2.imread(image_path, 1)
+        # resize
+        of = 2
+        new_size = (96+of*2, 112+of*2)
+        img = cv2.resize(img, new_size)
 
     if ':train' in name:
         if random.random()>0.5: img = cv2.flip(img,1)
@@ -98,8 +111,8 @@ def train(epoch,args):
     correct = 0
     total = 0
     batch_idx = 0
-    ds = ImageDataset(args.dataset,dataset_load,'data/casia_landmark.txt',name=args.net+':train',
-        bs=args.bs,shuffle=True,nthread=6,imagesize=128, maxlistnum=None)
+    ds = ImageDataset(args.dataset,dataset_load,args.lmk,name=args.net+':train',
+        bs=args.bs,shuffle=True,nthread=6,imagesize=128, maxlistnum=args.maxlistnum)
     while True:
         # print('........')
         img,label = ds.get()
