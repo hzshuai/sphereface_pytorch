@@ -79,10 +79,11 @@ zfile = zipfile.ZipFile(args.lfw)
 
 landmark = {}
 with open('data/lfw_landmark.txt') as f:
+#with open('data/lfw_lmk') as f:
     landmark_lines = f.readlines()
 for line in landmark_lines:
-    l = line.replace('\n','').split('\t')
-    landmark[l[0]] = [int(k) for k in l[1:]]
+    l = line.replace('\n','').split()
+    landmark[l[0]] = [k for k in l[1:]]
 
 with open('data/pairs.txt') as f:
     pairs_lines = f.readlines()[1:]
