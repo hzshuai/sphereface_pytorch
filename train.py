@@ -23,6 +23,7 @@ parser.add_argument('--lmk', default='data/casia_landmark.txt', type=str)
 parser.add_argument('--lr', default=0.1, type=float, help='learning rate')
 parser.add_argument('--bs', default=256, type=int, help='')
 parser.add_argument('--maxlistnum', type=int, help='')
+parser.add_argument('--align', default=1, type=int, help='')
 
 args = parser.parse_args()
 use_cuda = torch.cuda.is_available()
@@ -52,18 +53,21 @@ def dataset_load(name,filename,pindex,cacheobj,zfile):
         nameinzip = split[0]
         classid = int(split[1])
         # print('nameinzip: ', nameinzip, ', classid: ', classid)
-        src_pts = []
-        for i in range(5):
-            src_pts.append([int(split[2*i+2]),int(split[2*i+3])])
 
         data = np.frombuffer(zfile.read('CASIA-maxpy-clean/' + nameinzip),np.uint8)
         img = cv2.imdecode(data,1)
-        img = alignment(img,src_pts)
     else:
         split = filename.split()
         image_path = split[0]
         classid = int(split[1])
         img = cv2.imread(image_path, 1)
+
+    if args.align == 1:
+        src_pts = []
+        for i in range(5):
+            src_pts.append([int(split[2*i+2]),int(split[2*i+3])])
+        img = alignment(img, src_pts)
+    else:
         # resize
         of = 2
         new_size = (96+of*2, 112+of*2)
@@ -79,7 +83,6 @@ def dataset_load(name,filename,pindex,cacheobj,zfile):
             img = img[2:2+112,2:2+96,:]
     else:
         img = img[2:2+112,2:2+96,:]
-
 
     img = img.transpose(2, 0, 1).reshape((1,3,112,96))
     img = ( img - 127.5 ) / 128.0
