@@ -3,6 +3,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 .idea/
+model*
+train-gt-100.txt
 
 # C extensions
 *.so

@@ -153,13 +153,13 @@ criterion = net_sphere.AngleLoss()
 
 
 print('start: time={}'.format(dt()))
-for epoch in range(0, 20):
-    if epoch in [0,10,15,18]:
+for epoch in range(0, 25):
+    if epoch in [0,10,15,20]:
         if epoch!=0: args.lr *= 0.1
         optimizer = optim.SGD(net.parameters(), lr=args.lr, momentum=0.9, weight_decay=5e-4)
 
     train(epoch,args)
-    save_model(net, '{}_{}.pth'.format(args.net,epoch))
+    save_model(net, 'model/{}_{}.pth'.format(args.net,epoch))
 
 print('finish: time={}\n'.format(dt()))
 
