@@ -146,7 +146,7 @@ def train(epoch,args):
     print('')
 
 
-net = getattr(net_sphere,args.net)(1234)
+net = getattr(net_sphere,args.net)(args.classnum)
 # net.load_state_dict(torch.load('sphere20a_0.pth'))
 if use_cuda:
     net.cuda()
