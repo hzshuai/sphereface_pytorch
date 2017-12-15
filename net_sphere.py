@@ -97,6 +97,7 @@ class sphere20a(nn.Module):
     def __init__(self,classnum=10574,feature=False):
         super(sphere20a, self).__init__()
         self.classnum = classnum
+        print('classnum: ', classnum)
         self.feature = feature
         #input = B*3*112*96
         self.conv1_1 = nn.Conv2d(3,64,3,2,1) #=>B*64*56*48

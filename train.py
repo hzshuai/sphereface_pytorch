@@ -24,6 +24,7 @@ parser.add_argument('--lr', default=0.1, type=float, help='learning rate')
 parser.add_argument('--bs', default=256, type=int, help='')
 parser.add_argument('--maxlistnum', type=int, help='')
 parser.add_argument('--align', default=1, type=int, help='')
+parser.add_argument('--classnum', default=10574, type=int, help='')
 
 args = parser.parse_args()
 use_cuda = torch.cuda.is_available()
@@ -145,7 +146,7 @@ def train(epoch,args):
     print('')
 
 
-net = getattr(net_sphere,args.net)()
+net = getattr(net_sphere,args.net)(1234)
 # net.load_state_dict(torch.load('sphere20a_0.pth'))
 if use_cuda:
     net.cuda()
@@ -160,7 +161,7 @@ for epoch in range(0, 20):
         optimizer = optim.SGD(net.parameters(), lr=args.lr, momentum=0.9, weight_decay=5e-4)
 
     train(epoch,args)
-    save_model(net, '{}_{}.pth'.format(args.net,epoch))
+    save_model(net, 'model/{}_{}.pth'.format(args.net,epoch))
 
 print('finish: time={}\n'.format(dt()))
 
