@@ -24,6 +24,7 @@ parser.add_argument('--lr', default=0.1, type=float, help='learning rate')
 parser.add_argument('--bs', default=256, type=int, help='')
 parser.add_argument('--maxlistnum', type=int, help='')
 parser.add_argument('--align', default=1, type=int, help='')
+parser.add_argument('--classnum', default=10574, type=int, help='')
 
 args = parser.parse_args()
 use_cuda = torch.cuda.is_available()
@@ -145,7 +146,7 @@ def train(epoch,args):
     print('')
 
 
-net = getattr(net_sphere,args.net)()
+net = getattr(net_sphere,args.net)(1234)
 # net.load_state_dict(torch.load('sphere20a_0.pth'))
 if use_cuda:
     net.cuda()
@@ -153,6 +154,7 @@ criterion = net_sphere.AngleLoss()
 
 
 print('start: time={}'.format(dt()))
+print('start with arguments %s: ' % args)
 for epoch in range(0, 25):
     if epoch in [0,10,15,20]:
         if epoch!=0: args.lr *= 0.1
