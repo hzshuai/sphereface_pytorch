@@ -11,7 +11,7 @@ def myphi(x,m):
             x**8/math.factorial(8) - x**9/math.factorial(9)
 
 class AngleLinear(nn.Module):
-    def __init__(self, in_features, out_features, m = 4, phiflag=True):
+    def __init__(self, in_features, out_features, m = 1, phiflag=True):
         super(AngleLinear, self).__init__()
         self.in_features = in_features
         self.out_features = out_features
@@ -63,9 +63,9 @@ class AngleLoss(nn.Module):
         super(AngleLoss, self).__init__()
         self.gamma   = gamma
         self.it = 0
-        self.LambdaMin = 5.0
-        self.LambdaMax = 1500.0
-        self.lamb = 1500.0
+        self.LambdaMin = 5.0 #5.0
+        self.LambdaMax = 0.0
+        self.lamb = 4000.0
 
     def forward(self, input, target):
         self.it += 1

@@ -5,6 +5,8 @@ __pycache__/
 .idea/
 model*
 train-gt-100.txt
+*.logD
+*.txt
 
 # C extensions
 *.so

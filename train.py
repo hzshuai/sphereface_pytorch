@@ -66,7 +66,7 @@ def dataset_load(name,filename,pindex,cacheobj,zfile):
     if args.align == 1:
         src_pts = []
         for i in range(5):
-            src_pts.append([int(split[2*i+2]),int(split[2*i+3])])
+            src_pts.append([split[2*i+2], split[2*i+3]])
         img = alignment(img, src_pts)
     else:
         # resize
